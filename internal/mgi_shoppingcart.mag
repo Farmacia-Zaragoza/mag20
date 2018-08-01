@@ -30,8 +30,74 @@ class mgi_shoppingcart extends mg_print
 
 	}
 	//addItemtocart('code2',2)
-	public function addItemtocart($code,$qty){
-		Mage::init('default');
+	public function addItemtocart($code,$qty,$objectManager){
+		$state = $objectManager->get('Magento\Framework\App\State');
+		$state->setAreaCode('frontend');
+		/*$productId = 1;
+		$product = $objectManager->create('\Magento\Catalog\Model\Product')->load($productId);
+		$cart = $objectManager->create('Magento\Checkout\Model\Cart');  
+		//$formKey = $objectManager->create('\Magento\Framework\Data\Form\FormKey')->getFormKey();  
+		//$option = array('469'=>459);
+
+		$params = array(
+							//'form_key' => $formKey,
+							'product' => $productId, //product Id
+							'qty'   =>1 //, //quantity of product                
+							//'options' => $option
+							);
+		$cart->addProduct($product, $params);
+		$cart->save();*/
+		
+		$_product = $objectManager->create('Magento\Catalog\Model\Product')->load(1);
+		echo $_product->getName();
+//$listBlock = $objectManager->get('\Magento\Catalog\Block\Product\ListProduct');
+echo '1';
+$cart = $objectManager->create('Magento\Checkout\Model\Cart');
+echo '2';
+//$http = $objectManager->create('Magento\Framework\App\Response\Http');
+echo '3';
+$session = $objectManager->get('Magento\Checkout\Model\Session');
+$productRepository=$objectManager->create('Magento\Catalog\Model\ProductRepository');
+$formKey=$objectManager->create('\Magento\Framework\Data\Form\FormKey');
+
+echo '4';
+$productId =1;
+  $params = array(
+                'form_key' => $formKey->getFormKey(),
+                'product' => 1, //product Id
+                'qty'   =>1 //quantity of product                
+            );  
+//echo '<pre>';print_r($params);            
+    //Load the product based on productID   
+    //$_product = $this->product->load($productId);    
+try{	
+    $cart->addProduct($_product, $params);
+    $cart->save();
+}catch(Exception $e){
+	echo $e->getMessage();
+}
+//$cart->addProduct($product, $params);
+echo '7';
+
+
+            /*$params = array(
+                'product' => 1,
+                'qty' => 1
+            );*/
+            //$_product = $productRepository->getById(1);
+			echo '8';
+            //$cart->addProduct($product,$params);
+           // $cart->save();
+
+		
+//$cart->addProduct($product,array('qty' => $qty));
+echo '5';
+//$cart->save();
+echo '6';
+$session->setCartWasUpdated(true);
+echo 'jjjjjjjjjjj';
+		
+		/*Mage::init('default');
         Mage::getSingleton('core/session', array('name' => 'frontend'));  
 
 		$id = Mage::getModel('catalog/product')->getIdBySku($code);
@@ -66,7 +132,7 @@ class mgi_shoppingcart extends mg_print
 		}else{
 		echo $code.' product not exists';
 		return 0;
-	    }		
+	    }*/		
 
 	}
 	//getAllItemcart()
