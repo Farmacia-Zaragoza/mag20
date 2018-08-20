@@ -52,26 +52,7 @@ class mgi_shoppingcart extends mg_print
 		$cart->save();
 	}
 	
-	public function quoteAddToCart($objectManager,$customerSession)
-   {
-     echo $customerId = $customerSession->getCustomer()->getId();
-      // let's assume product Id is 50
-      $product = $objectManager->create('Magento\Catalog\Model\Product')->load(1);
-       $params = array(
-						'product' => $productId, //product Id
-						'qty'   =>1 //quantity of product                
-					);  
-      $request = new \Magento\Framework\DataObject();
-      $request->setData($params);
-      // here quote is created for customer
-	  
-      $quoteId = $objectManager->get('Magento\Quote\Api\CartManagementInterface')->createEmptyCartForCustomer($customerId);
-      $quote = $objectManager->get('Magento\Quote\Api\CartRepositoryInterface')->get($quoteId);
-      $quote->addProduct($productAddToCart, $request);
-      $objectManager->get('Magento\Quote\Api\CartRepositoryInterface')->save($quote);
-      $quote->collectTotals();
-          
-   }
+	
 	//getAllItemcart()
 	public function getAllItemcart(){
 	// This has to run to authenticate customer and checkout session calls.
