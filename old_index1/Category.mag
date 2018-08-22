@@ -1,0 +1,31 @@
+<?php
+ini_set('max_execution_time', 0);
+ini_set('memory_limit', '-1');
+set_time_limit(0);
+while (@ob_end_flush());
+use Magento\Framework\App\Bootstrap;
+include('../app/bootstrap.php');
+$bootstrap = Bootstrap::create(BP, $_SERVER);
+
+$objectManager = $bootstrap->getObjectManager();
+
+$state = $objectManager->get('Magento\Framework\App\State');
+$state->setAreaCode('frontend');
+$objectManager->get('Magento\Framework\Registry')->register('isSecureArea', true);
+$categoryFactory = $objectManager->create('Magento\Catalog\Model\ResourceModel\Category\CollectionFactory');
+$categories = $categoryFactory->create()                              
+    ->addAttributeToSelect('*')
+    ->setStore(1); //categories from current store will be fetched
+
+foreach ($categories as $category){
+    //echo $category->getName();
+}
+
+$level=2;
+		$_category = $categoryFactory->create()
+			->addFieldToFilter('name', 'test1')
+			//->addAttributeToFilter('level',$level)
+			->getFirstItem();
+			//if($_category->getLevel()==2){
+			 echo $category_id = $_category->getId(); //category id
+			//}

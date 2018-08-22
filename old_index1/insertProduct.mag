@@ -1,0 +1,76 @@
+<?php
+ini_set('max_execution_time', 0);
+ini_set('memory_limit', '-1');
+set_time_limit(0);
+while (@ob_end_flush());
+use Magento\Framework\App\Bootstrap;
+include('../app/bootstrap.php');
+$bootstrap = Bootstrap::create(BP, $_SERVER);
+
+$objectManager = $bootstrap->getObjectManager();
+
+$state = $objectManager->get('Magento\Framework\App\State');
+$state->setAreaCode('frontend');
+$objectManager->get('Magento\Framework\Registry')->register('isSecureArea', true);
+    
+
+// delete product
+
+
+//delete by id
+//$product = $objectManager->create('Magento\Catalog\Model\Product');
+//$product->load(5)->delete();
+//die;
+
+//delete by sku
+//$product = $objectManager->create('Magento\Catalog\Model\Product');//
+//$pId=$product->getIdBySku('test-SKU11');
+//$product->load($pId)->delete();
+//die;
+
+//get product collection
+//$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+/** @var \Magento\Catalog\Model\ResourceModel\Product\Collection $productCollection */
+//$productCollection = $objectManager->create('Magento\Catalog\Model\ResourceModel\Product\Collection');
+/** Apply filters here */
+//$productCollection->load();
+//print_r($productCollection->getData());
+
+
+//assign product to category
+ $new_category_id = array('3');
+ $sku = 'test-SKU11';
+
+ $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+
+ $CategoryLinkRepository = $objectManager->get('\Magento\Catalog\Api\CategoryLinkManagementInterface');
+ $CategoryLinkRepository->assignProductToCategories($sku, $new_category_id);
+
+
+
+/*
+$_product = $objectManager->create('Magento\Catalog\Model\Product');
+//$_product->load(5)->delete();
+//die;
+$_product->setName('Test Product11');
+$_product->setTypeId('simple');
+$_product->setAttributeSetId(4);
+$_product->setSku('test-SKU11');
+$_product->setWebsiteIds(array(1));
+$_product->setVisibility(4);
+$_product->setPrice(10);
+$_product->setStatus(1);
+$_product->setImage('/testimg/test.jpg');
+$_product->setSmallImage('/testimg/test.jpg');
+$_product->setThumbnail('/testimg/test.jpg');
+$_product->setStockData(array(
+        'use_config_manage_stock' => 0, //'Use config settings' checkbox
+        'manage_stock' => 1, //manage stock
+        'min_sale_qty' => 1, //Minimum Qty Allowed in Shopping Cart
+        'max_sale_qty' => 2, //Maximum Qty Allowed in Shopping Cart
+        'is_in_stock' => 1, //Stock Availability
+        'qty' => 100 //qty
+        )
+    );
+
+$_product->save();*/
