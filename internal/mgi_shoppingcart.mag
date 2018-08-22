@@ -52,81 +52,139 @@ class mgi_shoppingcart extends mg_print
 		$cart->save();
 	}
 	
-	
+	public function quoteAddToCart($objectManager,$customerSession)
+   {
+     echo $customerId = $customerSession->getCustomer()->getId();
+      // let's assume product Id is 50
+      $product = $objectManager->create('Magento\Catalog\Model\Product')->load(1);
+       $params = array(
+						'product' => $productId, //product Id
+						'qty'   =>1 //quantity of product                
+					);  
+      $request = new \Magento\Framework\DataObject();
+      $request->setData($params);
+      // here quote is created for customer
+	  
+      $quoteId = $objectManager->get('Magento\Quote\Api\CartManagementInterface')->createEmptyCartForCustomer($customerId);
+      $quote = $objectManager->get('Magento\Quote\Api\CartRepositoryInterface')->get($quoteId);
+      $quote->addProduct($productAddToCart, $request);
+      $objectManager->get('Magento\Quote\Api\CartRepositoryInterface')->save($quote);
+      $quote->collectTotals();
+          
+   }
 	//getAllItemcart()
-	public function getAllItemcart(){
+	public function getAllItemcart($objectManager){
 	// This has to run to authenticate customer and checkout session calls.
-	Mage::getSingleton('core/session', array('name' => 'frontend'));
-	// Get any customer model you desire.
-	$oSession = Mage::getSingleton( 'customer/session' );
-	$oCustomer = $oSession->getCustomer();
-	$oCheckout = Mage::getSingleton( 'checkout/session' );
-	$oQuote = $oCheckout->getQuote();
-	$oCart = $oQuote->getAllItems();
-	if( !empty( $oCart ) )
-	{
-		foreach ( $oCart as $oItem ) 
-		{
-			$sName  = $oItem->getProduct()->getName();
-			$fPrice = $oItem->getProduct()->getPrice();
-			var_dump( $sName );
-			var_dump( $fPrice );
-		}
-	}
+	
+
+	$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+	 $cart = $objectManager->get('\Magento\Checkout\Model\Cart'); 
+
+	// retrieve quote items collection
+	$itemsCollection = $cart->getQuote()->getItemsCollection();
+
+	// get array of all items what can be display directly
+	$itemsVisible = $cart->getQuote()->getAllVisibleItems();
+
+	// retrieve quote items array
+	 $items = $cart->getQuote()->getAllItems();
+
+	foreach($items as $item) {
+		 echo 'ID: '.$item->getProductId().'<br />';
+		  echo 'Name: '.$item->getName().'<br />';
+		   echo 'Sku: '.$item->getSku().'<br />';
+		   echo 'Quantity: '.$item->getQty().'<br />';
+		  echo 'Price: '.$item->getPrice().'<br />';
+		echo "<br />";            
+	  }
+
+
 
 	}
 	//deleteallitemscart()
-	public function deleteallitemscart(){
-	// This has to run to authenticate customer and checkout session calls.
-	Mage::getSingleton('core/session', array('name' => 'frontend'));
-	// Get any customer model you desire.
-	$oSession = Mage::getSingleton( 'customer/session' );
-	$oCustomer = $oSession->getCustomer();
-	$oCheckout = Mage::getSingleton( 'checkout/session' );
-	$oQuote = $oCheckout->getQuote();
-	$oCart = $oQuote->getAllItems();
-	if( !empty( $oCart ) )
-	{
-		foreach ( $oCart as $oItem ) 
-		{
-			$oItem->delete();
-		}
-	}
+	public function deleteallitemscart($objectManager){
+	 $cart = $objectManager->get('\Magento\Checkout\Model\Cart'); 
+
+	// retrieve quote items collection
+	$itemsCollection = $cart->getQuote()->getItemsCollection();
+
+	// get array of all items what can be display directly
+	$itemsVisible = $cart->getQuote()->getAllVisibleItems();
+
+	// retrieve quote items array
+	 $items = $cart->getQuote()->setIsActive(false)->getAllItems();
+     //$cart->getQuote()->setIsActive(false);
+	foreach($items as $item) {
+		$item->delete();           
+	  }
 
 	
 	}
 	
+	public function deleteQuoteItems($objectManager){
+    //$checkoutSession = $this->getCheckoutSession($objectManager); 
+	/*$cart = $objectManager->get('\Magento\Checkout\Model\Cart');
+    //$allItems = $cart->getQuote()->getAllVisibleItems();//returns all teh items in session
+	$itemsCollection = $cart->getQuote()->getItemsCollection();
+	$allItems = $cart->getQuote()->setIsActive(false)->getAllItems();
+    foreach ($allItems as $item) {
+        //$itemId = $item->getItemId();//item id of particular item
+       // $quoteItem=$this->getItemModel($objectManager)->load($itemId);//load particular item which you want to delete by his item id
+        $item->delete();//deletes the item
+    }*/
+	$checkoutSession = $objectManager->get('Magento\Checkout\Model\Session');
+	$allItems = $checkoutSession->getQuote()->getAllVisibleItems();
+	$cart =  $objectManager->get('Magento\Checkout\Model\Cart');
+
+	if(count($allItems) > 0){
+		foreach ($allItems as $item) {
+			$itemId = $item->getItemId();//item id of particular item
+			$cart->removeItem($itemId)->save();
+		}
+	}
+	 $cartObject = $objectManager->create('Magento\Checkout\Model\Cart')->truncate();
+     $cartObject->saveQuote();
+	}
+	public function getCheckoutSession($objectManage){
+		$checkoutSession = $objectManager->get('Magento\Checkout\Model\Session');//checkout session
+		return $checkoutSession;
+	}
+	 
+	public function getItemModel($objectManager){
+		//$objectManager = \Magento\Framework\App\ObjectManager::getInstance();//instance of object manager
+		$itemModel = $objectManager->create('Magento\Quote\Model\Quote\Item');//Quote item model to load quote item
+		return $itemModel;
+	}
+	
+	public function deleteQuoteById($objectManager,$quoteId){
+		$quote = $objectManager->create('Magento\Quote\Model\Quote')->load($quoteId);
+	    $quote->setIsActive(false);
+	    $quote->delete();
+	}
+	
 	//deletesingleitemcart
-	public function deletesingleitemcart($pCode){
+	public function deletesingleitemcart($pCode,$objectManager){
 	// This has to run to authenticate customer and checkout session calls.
-	Mage::getSingleton('core/session', array('name' => 'frontend'));
-	// Get any customer model you desire.
-	$oSession = Mage::getSingleton( 'customer/session' );
-	$oCustomer = $oSession->getCustomer();
-	$oCheckout = Mage::getSingleton( 'checkout/session' );
-	$oQuote = $oCheckout->getQuote();
-	$oCart = $oQuote->getAllItems();
-	if( !empty( $oCart ) )
-	{
-		foreach ( $oCart as $oItem ) 
-		{   
-		    if($oItem->getProduct()->getSku()==$pCode){
-			$oItem->delete();
+	$checkoutSession = $objectManager->get('Magento\Checkout\Model\Session');
+	$allItems = $checkoutSession->getQuote()->getAllVisibleItems();
+	$cart =  $objectManager->get('Magento\Checkout\Model\Cart');
+
+	if(count($allItems) > 0){
+		foreach ($allItems as $item) {
+			$itemId = $item->getItemId();//item id of particular item
+			if($pCode==$item->getProduct()->getSku()){
+			$cart->removeItem($itemId)->save();
 			}
 		}
 	}
 	}
 	
 	//updatecartitem('code2',3)
-	public function updatecartitem($pCode,$qty){
-	// This has to run to authenticate customer and checkout session calls.
-	Mage::getSingleton('core/session', array('name' => 'frontend'));
-	// Get any customer model you desire.
-	$oSession = Mage::getSingleton( 'customer/session' );
-	$oCustomer = $oSession->getCustomer();
-	$oCheckout = Mage::getSingleton( 'checkout/session' );
-	$oQuote = $oCheckout->getQuote();
-	$oCart = $oQuote->getAllItems();
+	public function updatecartitem($pCode,$qty,$objectManager){
+	$checkoutSession = $objectManager->get('Magento\Checkout\Model\Session');
+	$oCart = $checkoutSession->getQuote()->getAllVisibleItems();
+	$cart =  $objectManager->get('Magento\Checkout\Model\Cart');
+	//echo 'yes i am here';die;
 	if( !empty( $oCart ) )
 	{
 		foreach ( $oCart as $oItem ) 
@@ -143,35 +201,26 @@ class mgi_shoppingcart extends mg_print
 	}
 	
 	//applycouponcode('Test123')
-	public function applycouponcode($couponCode) {
-        $couponCode = $couponCode;
-        if (!Zend_Validate::is(trim($couponCode), 'NotEmpty')) {
-            throw new Exception($this->__('coupon code cannot be empty.'));
-        }
-        $oCoupon = Mage::getModel('salesrule/coupon')->load($couponCode, 'code');
-        $data = $oCoupon->getData();
-        if (empty($data)) {
-            throw new Exception($this->__('coupon code did not match.'));
-        }
-        Mage::getSingleton('checkout/cart')->getQuote()->getShippingAddress()
-                ->setCollectShippingRates(true);
-        Mage::getSingleton('checkout/cart')->getQuote()
-                ->setCouponCode($couponCode)->collectTotals()->save();
-        $quoteData = Mage::getModel('checkout/cart')->getQuote();
-        $subTotal = $quoteData['subtotal'];
-        $subtotal_with_discount = $quoteData['subtotal_with_discount'];
-        $grandTotal = $quoteData['grand_total'];
-        $discountTotal = ($subTotal - $subtotal_with_discount);
-        $discount = number_format($discountTotal, 4, null, '');
-
-        return $discount;
+	public function applycouponcode($couponCode,$objectManager) {
+		//echo 'jjjjjjjjjj';
+	   $checkoutSession = $objectManager->get('Magento\Checkout\Model\Session');
+       $checkoutSession->getQuote()->setCouponCode($couponCode)
+                                  ->collectTotals()
+                                  ->save();
     }
 	
 	//RemoveCouponcode('Test123')
-	public function RemoveCouponcode(){
-		Mage::getSingleton('checkout/cart')->getQuote()->setCouponCode('')
-                    ->collectTotals()
-                    ->save();
+	public function RemoveCouponcode($objectManager){
+		//$checkoutSession = $objectManager->get('Magento\Checkout\Model\Session');
+        //$checkoutSession->getQuote()->setCouponCode('') ->collectTotals()->save();
+		$cartQuote = $objectManager->get('Magento\Checkout\Model\Cart')->getQuote();
+		  $oldCouponCode = $cartQuote->getCouponCode();
+		  echo $codeLength = strlen($oldCouponCode);
+		   if($codeLength){     
+			 $cartQuote->getShippingAddress()->setCollectShippingRates(true);
+			 $cartQuote->setCouponCode('')->collectTotals();//Removing coupon 
+			 $objectManager->get('Magento\Quote\Api\CartRepositoryInterface')->save($cartQuote);
+		   }
 
 	}
 }
