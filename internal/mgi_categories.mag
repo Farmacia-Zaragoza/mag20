@@ -260,5 +260,21 @@ class mgi_categories extends mg_print
 	}
 	}
 	}
+	
+	//Gategory list by level
+	public function getallcategoriesByLevel($level=2,$_objectManager){
+	$categoryCollection = $_objectManager->get('Magento\Catalog\Model\ResourceModel\Category\Collection')->addFieldToFilter('level', $level);
+	//->create()->getCollection()->addFieldToFilter('level', $level);
+	$catids=array();
+	foreach($categoryCollection as $category) {
+	      $catids[]=$category->getId();
+	}
+	return $catids;
+	}
+	
+	public function getcategoryNameById($cid,$_objectManager){
+		$category=$_objectManager->create('Magento\Catalog\Model\Category')->load($cid);
+		return $category->getName();
+	}
 }
  
