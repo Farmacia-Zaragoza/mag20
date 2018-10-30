@@ -26,10 +26,22 @@ class mgi_savelater extends mg_print
 
 	}
 	//additemtosave($pcode,$storeid,$qty)
-	public function additemtosave($pCode,$storeid,$qty){
+	public function additemtosave($_objectManager,$pCode,$storeid,$qty){
+		$model = $_objectManager->create('Mkt\Savelater\Model\Items');
+		// Magento Timezone Interface
+        $timezone =$_objectManager->create('Magento\Framework\Stdlib\DateTime\TimezoneInterface');
+        $date=$timezone->date()->format('Y-m-d H:i:s');
+		$data['store_id']=$storeid;
+		$data['customer_id']=$customerid;
+		$data['product_id']=$pCode;
+		$data['qty']=$qty;
+		$data['status']=1;
+		$data['created_date']=$date;
+		$model->setData($data);
+		$model->save();
 		//Mage::init('default');
         //Mage::getSingleton('core/session', array('name' => 'frontend'));  
-		if(Mage::getSingleton('customer/session')->isLoggedIn()) {
+		/*if(Mage::getSingleton('customer/session')->isLoggedIn()) {
 		$id = Mage::getModel('catalog/product')->getIdBySku($pCode);
 		$customer = Mage::getSingleton('customer/session')->getCustomer();
 		$customerId=$customer->getId(); 
@@ -59,18 +71,18 @@ class mgi_savelater extends mg_print
 		 
 		 }
 		$data2=json_encode($data);
-		echo $data2;
+		echo $data2;*/
 
 	}
 	//deleteitembyId($itemId)
-	public function deleteitembyId($itemId){
-		$savelater = Mage::getModel('savelater/savelater')->load($itemId);
+	public function deleteitembyId($_objectManager,$itemId){
+		$savelater = $_objectManager->create('Mkt\Savelater\Model\Items')->load($itemId);
 		$savelater->delete();
 		
     }
 	//updateitembyId($itemId)
 	public function updateitembyId($itemId,$qty){
-		$savelater = Mage::getModel('savelater/savelater');		
+		$savelater = $_objectManager->create('Mkt\Savelater\Model\Items')->load($itemId);		
 		$savelater->setQty($qty)->setId($itemId);		
 	}
 }
