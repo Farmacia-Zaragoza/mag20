@@ -26,7 +26,7 @@ class mgi_savelater extends mg_print
 
 	}
 	//additemtosave($pcode,$storeid,$qty)
-	public function additemtosave($_objectManager,$pCode,$storeid,$qty){
+	public function additemtosave($_objectManager,$pCode,$storeid,$qty,$customerid){
 		$model = $_objectManager->create('Mkt\Savelater\Model\Items');
 		// Magento Timezone Interface
         $timezone =$_objectManager->create('Magento\Framework\Stdlib\DateTime\TimezoneInterface');
@@ -81,9 +81,9 @@ class mgi_savelater extends mg_print
 		
     }
 	//updateitembyId($itemId)
-	public function updateitembyId($itemId,$qty){
+	public function updateitembyId($_objectManager,$itemId,$qty){
 		$savelater = $_objectManager->create('Mkt\Savelater\Model\Items')->load($itemId);		
-		$savelater->setQty($qty)->setId($itemId);		
+		$savelater->setQty($qty)->save();		
 	}
 }
  

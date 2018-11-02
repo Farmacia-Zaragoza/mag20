@@ -8,7 +8,7 @@
 //-------------------------------------------------------------------------------------
 // ==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--
 // Methods:
-//additemtofavorite($pcode,$qty,$storeid)  add item by code
+//additemtofavorite($pcode,$qty,$storeid)  add product by code
 //deleteitembyId($itemId) delete item by id
 //updateitembyId($itemId,$qty) update qty by id
 //-------------------------------------------------------------------------------------
@@ -25,24 +25,36 @@ class mgi_favorite extends mg_print
    	{   
 
 	}
-	//additemtofavorite($pcode,$storeid,$qty)
-	public function additemtofavorite($pCode,$storeid,$qty){
+	//additemtosave($pcode,$storeid,$qty)
+	public function additemtofavorite($_objectManager,$pCode,$storeid,$qty,$customerid){
+		$model = $_objectManager->create('Mkt\Favorite\Model\Items');
+		// Magento Timezone Interface
+        $timezone =$_objectManager->create('Magento\Framework\Stdlib\DateTime\TimezoneInterface');
+        $date=$timezone->date()->format('Y-m-d H:i:s');
+		$data['store_id']=$storeid;
+		$data['customer_id']=$customerid;
+		$data['product_id']=$pCode;
+		$data['qty']=$qty;
+		$data['status']=1;
+		$data['created_date']=$date;
+		$model->setData($data);
+		$model->save();
 		//Mage::init('default');
         //Mage::getSingleton('core/session', array('name' => 'frontend'));  
-		if(Mage::getSingleton('customer/session')->isLoggedIn()) {
+		/*if(Mage::getSingleton('customer/session')->isLoggedIn()) {
 		$id = Mage::getModel('catalog/product')->getIdBySku($pCode);
 		$customer = Mage::getSingleton('customer/session')->getCustomer();
 		$customerId=$customer->getId(); 
 		$productId=$id;
 		if($productId)
 		{
-		$favorite = Mage::getModel('favorite/favorite');
-		$favorite->setStoreId($storeid);
-		$favorite->setProductId($productId);
-		$favorite->setCustomerId($customerId);
-		$favorite->setQty($qty);
-		$favorite->setStatus(1);
-		$favorite->save();
+		$savelater = Mage::getModel('savelater/savelater');
+		$savelater->setStoreId($storeid);
+		$savelater->setProductId($productId);
+		$savelater->setCustomerId($customerId);
+		$savelater->setQty($qty);
+		$savelater->setStatus(1);
+		$savelater->save();
 		$data['responseCode']='1';
 		$data['msg']="Add Product Successfully";
 		}
@@ -59,18 +71,19 @@ class mgi_favorite extends mg_print
 		 
 		 }
 		$data2=json_encode($data);
-		echo $data2;
+		echo $data2;*/
 
 	}
 	//deleteitembyId($itemId)
-	public function deleteitembyId($itemId){
-		$favorite = Mage::getModel('favorite/favorite')->load($itemId);
-		$favorite->delete();		
+	public function deleteitembyId($_objectManager,$itemId){
+		$favorite = $_objectManager->create('Mkt\Favorite\Model\Items')->load($itemId);
+		$favorite->delete();
+		
     }
 	//updateitembyId($itemId)
-	public function updateitembyId($itemId,$qty){
-		$favorite = Mage::getModel('favorite/favorite');		
-		$favorite->setQty($qty)->setId($itemId);		
+	public function updateitembyId($_objectManager,$itemId,$qty){
+		$favorite = $_objectManager->create('Mkt\Favorite\Model\Items')->load($itemId);		
+		$favorite->setQty($qty)->save();		
 	}
 }
  

@@ -19,8 +19,8 @@ $_objectManager = $bootstrap->getObjectManager();
 $state = $_objectManager->get('Magento\Framework\App\State');
 $state->setAreaCode('frontend');
 
-$product = $_objectManager->get('Magento\Catalog\Model\Product')->load(1);
-echo $product->getName();
+//$product = $_objectManager->get('Magento\Catalog\Model\Product')->load(1);
+//echo $product->getName();
 /*if($customerSession->isLoggedIn()) {
    echo $customerSession->getCustomer()->getId();
     $customerSession->getCustomer()->getName(); 
@@ -34,14 +34,26 @@ if ($customerSession->isLoggedIn()) {
 echo 'ddddddddddd'.$customid = $customerSession->getCustomer()->getId();
 echo 'ssssssss'.$customgp = $customerSession->getCustomer()->getGroupId();
 }*/
-$shoppingCart = new mge_shoppingcart();
+
 //echo $shoppingCart->addItemtocart('test-SKU11',2,$_objectManager);
 //$shoppingCart->getAllItemcart($_objectManager);
 //$shoppingCart->deleteQuoteItems($_objectManager);
 //$shoppingCart->deletesingleitemcart('test-SKU11',$_objectManager);
 //$shoppingCart->updatecartitem('test-SKU11',2,$_objectManager);
 //$shoppingCart->applycouponcode('teste',$_objectManager);
-$shoppingCart->RemoveCouponcode($_objectManager);
+
+//save for later function
+//$shoppingCart = new mge_savelater();
+//$shoppingCart->additemtosave($_objectManager,'test','test','test',1);
+//$shoppingCart->deleteitembyId($_objectManager,2);
+
+//save for later function
+//$favorite = new mge_favorite();
+//$favorite->additemtofavorite($_objectManager,1,1,1,1);
+//$favorite->deleteitembyId($_objectManager,1);
+//$favorite->updateitembyId($_objectManager,2,2);
+
+
 //$product->delete_product($_objectManager,'code41');
 //echo $category->create_parent('RED',$_objectManager);
 //echo $category->delete_parent('RED',$_objectManager);
