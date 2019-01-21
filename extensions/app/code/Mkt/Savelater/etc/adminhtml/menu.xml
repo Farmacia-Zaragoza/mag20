@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Mkt. All rights reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Backend/etc/menu.xsd">
+    <menu>
+        <add id="mkt_savelater::savelater" title="Save for later" module="Mkt_Savelater" sortOrder="20" action="mkt_savelater/items/" resource="Mkt_Savelater::items"/>
+    </menu>
+</config>

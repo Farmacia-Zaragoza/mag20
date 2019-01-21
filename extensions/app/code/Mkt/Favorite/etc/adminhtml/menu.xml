@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Mkt. All rights reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Backend/etc/menu.xsd">
+    <menu>
+        <add id="mkt_favorite::favorite" title="Favorite" module="Mkt_Favorite" sortOrder="20" action="mkt_favorite/items/" resource="Mkt_Favorite::items"/>
+    </menu>
+</config>
